@@ -16,15 +16,17 @@
       --green:#16a34a;
       --amber:#d97706;
       --red:#dc2626;
+      --content-max:1520px;
+      --page-pad:clamp(20px,3vw,32px);
     }
     *{box-sizing:border-box}
     body{margin:0;font-family:Inter,"Segoe UI",Arial,sans-serif;background:var(--bg);color:var(--text)}
-    .page{max-width:1520px;margin:24px auto 36px;padding:0 16px}
+    .page{max-width:var(--content-max);margin:0 auto 36px;padding:0 var(--page-pad)}
     .hero{position:relative;background:var(--brand);color:#fff;border-radius:16px;padding:18px 22px;box-shadow:var(--shadow);margin-bottom:16px}
     .hero img{position:absolute;left:18px;top:16px;height:26px}
-    .hero .title-wrap{padding-left:150px}
-    .hero h1{margin:0 0 8px;font-size:27px;font-weight:800;letter-spacing:-0.02em;color:#fff}
-    .hero p{margin:0;font-size:14px;color:#fff;opacity:.95}
+    .hero .title-wrap{padding-left:0;text-align:left}
+    .hero h1{margin:0 0 8px;font-size:27px;font-weight:800;letter-spacing:-0.02em;color:#fff;text-align:left}
+    .hero p{margin:0;font-size:14px;color:#fff;opacity:.95;text-align:left}
     .toolbar{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:18px}
     .btn{border:none;border-radius:10px;min-height:38px;padding:0 14px;font-size:14px;font-weight:700;cursor:pointer;background:var(--brand);color:#fff;box-shadow:0 6px 14px rgba(16,35,61,.08)}
     .btn.ghost{background:#fff;color:var(--text);border:1px solid var(--line);box-shadow:none}
@@ -52,17 +54,24 @@
     .stack{display:grid;gap:18px}
     .note{color:var(--muted);font-size:12px;margin-top:10px;line-height:1.5}
     .footer-center{text-align:center;margin:30px 0 10px;font-size:13px;color:#6b7280}
+    .global-logo-row{display:flex;align-items:center;justify-content:flex-start;width:min(100%, var(--content-max));margin:12px auto 10px;padding:0 var(--page-pad);min-height:26px}
+    .global-logo{position:static;padding:0;background:transparent;box-shadow:none}
+    .global-logo img{display:block;height:24px;width:auto;max-width:160px}
     .tier-badge{display:inline-block;padding:4px 12px;border-radius:999px;font-size:12px;font-weight:800;text-transform:uppercase}
     .tier-badge.low{background:#dcfce7;color:var(--green)}.tier-badge.medium{background:#fef3c7;color:var(--amber)}.tier-badge.high{background:#fee2e2;color:var(--red)}
-    @media (max-width:1100px){.layout{grid-template-columns:1fr}.summary-grid{grid-template-columns:repeat(2,1fr)}.hero .title-wrap{padding-left:0;padding-top:30px}.hero img{left:22px;top:16px}}
-    @media (max-width:640px){.summary-grid{grid-template-columns:1fr}.field{grid-template-columns:1fr}.toolbar{flex-direction:column}.btn{width:100%}}
-    @media print{.toolbar{display:none}.page{max-width:none;margin:0;padding:0}.panel,.summary-card,.hero{box-shadow:none}}
+    @media (max-width:1100px){.layout{grid-template-columns:1fr}.summary-grid{grid-template-columns:repeat(2,1fr)}.hero .title-wrap{padding-left:0;padding-top:0}.hero img{left:22px;top:16px}.page{max-width:100%;padding:0 var(--page-pad)}.global-logo-row{margin:10px auto 8px}.global-logo img{height:22px;max-width:140px}}
+    @media (max-width:640px){.summary-grid{grid-template-columns:1fr}.field{grid-template-columns:1fr}.toolbar{flex-direction:column}.btn{width:100%}.global-logo img{height:20px;max-width:120px}}
+    @media print{.toolbar,.global-logo-row{display:none}.page{max-width:none;margin:0;padding:0}.panel,.summary-card,.hero{box-shadow:none}}
   </style>
 </head>
 <body>
+  <div class="global-logo-row">
+    <div class="global-logo">
+      <img src="https://s7d1.scene7.com/is/image/kyndryl/logo-header?qlt=85&ts=1712781462020&$SVG-Transparency$&dpr=off" alt="" aria-hidden="true" />
+    </div>
+  </div>
   <div class="page">
     <section class="hero">
-      <img src="https://s7d1.scene7.com/is/image/kyndryl/logo-header?qlt=85&ts=1712781462020&$SVG-Transparency$&dpr=off" alt="Kyndryl" />
       <div class="title-wrap">
         <h1>Cloudflare Effort Estimator Tool</h1>
         <p>Estimates effort for Cloudflare service implementations and migrations. Scoring engine based on complexity parameters with weighted lookup.</p>
