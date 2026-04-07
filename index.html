@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Cloudflare Effort Estimator Tool</title>
+  <title>Cloudflare Effort Estimator</title>
   <style>
     :root{
       --brand:#FF452E;
@@ -13,54 +13,46 @@
       --text:#12233d;
       --muted:#5e708c;
       --shadow:0 14px 28px rgba(16,35,61,.10);
-      --green:#16a34a;
-      --amber:#d97706;
-      --red:#dc2626;
-      --content-max:1520px;
+      --content-max:1440px;
       --page-pad:clamp(20px,3vw,32px);
     }
     *{box-sizing:border-box}
     body{margin:0;font-family:Inter,"Segoe UI",Arial,sans-serif;background:var(--bg);color:var(--text)}
     .page{max-width:var(--content-max);margin:0 auto 36px;padding:0 var(--page-pad)}
-    .hero{position:relative;background:var(--brand);color:#fff;border-radius:16px;padding:18px 22px;box-shadow:var(--shadow);margin-bottom:16px}
-    .hero img{position:absolute;left:18px;top:16px;height:26px}
-    .hero .title-wrap{padding-left:0;text-align:left}
-    .hero h1{margin:0 0 8px;font-size:27px;font-weight:800;letter-spacing:-0.02em;color:#fff;text-align:left}
-    .hero p{margin:0;font-size:14px;color:#fff;opacity:.95;text-align:left}
+    .hero{background:var(--brand);color:#fff;border-radius:16px;padding:18px 22px;box-shadow:var(--shadow);margin-bottom:16px}
+    .hero h1{margin:0 0 8px;font-size:27px;font-weight:800;letter-spacing:-0.02em}
+    .hero p{margin:0;font-size:14px;opacity:.95}
     .toolbar{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:18px}
     .btn{border:none;border-radius:10px;min-height:38px;padding:0 14px;font-size:14px;font-weight:700;cursor:pointer;background:var(--brand);color:#fff;box-shadow:0 6px 14px rgba(16,35,61,.08)}
     .btn.ghost{background:#fff;color:var(--text);border:1px solid var(--line);box-shadow:none}
     .layout{display:grid;grid-template-columns:420px 1fr;gap:18px;align-items:start}
     .panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);overflow:hidden}
-    .panel-title{margin:0;padding:14px 16px;font-size:16px;font-weight:800;background:linear-gradient(180deg,#f7f9fd,#eef3f9);border-bottom:1px solid var(--line);color:var(--text)}
+    .panel-title{margin:0;padding:14px 16px;font-size:16px;font-weight:800;background:linear-gradient(180deg,#f7f9fd,#eef3f9);border-bottom:1px solid var(--line)}
     .panel-body{padding:16px}
     .section-label{margin:0 0 12px;font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:800}
-    .input-grid{display:grid;grid-template-columns:1fr;gap:10px}
-    .field{display:grid;grid-template-columns:1fr 160px;gap:12px;align-items:center}
-    .field label{font-size:13px;line-height:1.35;color:var(--text)}
-    .field label .hint{display:block;font-size:11px;color:var(--muted);font-weight:400;margin-top:2px}
-    select{width:100%;height:34px;border:1px solid #bcc8da;border-radius:8px;padding:0 10px;font-size:13px;background:#fff;color:var(--text)}
-    input[type=number]{width:100%;height:34px;border:1px solid #bcc8da;border-radius:8px;padding:0 10px;font-size:13px;background:#fff;color:var(--text)}
-    select:focus,input:focus{outline:none;border-color:#ff7d6d;box-shadow:0 0 0 3px rgba(255,69,46,.12)}
-    .summary-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px}
+    .input-grid{display:grid;grid-template-columns:1fr;gap:12px}
+    .field{display:grid;grid-template-columns:1fr 180px;gap:12px;align-items:center}
+    .field.buffer{grid-template-columns:1fr 120px}
+    .field label{font-size:14px;line-height:1.35}
+    input,select{width:100%;height:34px;border:1px solid #bcc8da;border-radius:8px;padding:0 10px;font-size:14px;background:#fff;color:var(--text)}
+    input:focus,select:focus{outline:none;border-color:#ff7d6d;box-shadow:0 0 0 3px rgba(255,69,46,.12)}
+    .summary-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:14px}
     .summary-card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 14px 12px;box-shadow:var(--shadow);min-height:84px}
-    .summary-card .label{display:block;font-size:12px;line-height:1.35;font-weight:800;text-transform:uppercase;color:#000;margin-bottom:6px;white-space:nowrap}
+    .summary-card .label{display:block;font-size:12px;line-height:1.35;font-weight:800;text-transform:uppercase;color:#000;margin-bottom:6px}
     .summary-card .value{font-size:20px;font-weight:900;line-height:1.1;color:var(--brand);font-family:"Segoe UI Black","Arial Black",sans-serif}
-    .tier-low{color:var(--green)}.tier-medium{color:var(--amber)}.tier-high{color:var(--red)}
-    table{width:100%;border-collapse:collapse;font-size:13px}
-    th,td{border:1px solid #c6d0df;padding:8px 10px;text-align:left;vertical-align:middle}
+    table{width:100%;border-collapse:collapse;font-size:14px}
+    th,td{border:1px solid #c6d0df;padding:9px 10px;text-align:left;vertical-align:middle}
     th{background:#f2f6fb;font-weight:800}
     td.num,th.num{text-align:right}
     .stack{display:grid;gap:18px}
     .note{color:var(--muted);font-size:12px;margin-top:10px;line-height:1.5}
-    .footer-center{text-align:center;margin:30px 0 10px;font-size:13px;color:#6b7280}
+    .callout{background:#fff8f6;border:1px solid #ffd2cb;border-radius:12px;padding:12px 14px;font-size:13px;line-height:1.5}
+    .callout strong{color:var(--brand)}
     .global-logo-row{display:flex;align-items:center;justify-content:flex-start;width:min(100%, var(--content-max));margin:12px auto 10px;padding:0 var(--page-pad);min-height:26px}
-    .global-logo{position:static;padding:0;background:transparent;box-shadow:none}
     .global-logo img{display:block;height:24px;width:auto;max-width:160px}
-    .tier-badge{display:inline-block;padding:4px 12px;border-radius:999px;font-size:12px;font-weight:800;text-transform:uppercase}
-    .tier-badge.low{background:#dcfce7;color:var(--green)}.tier-badge.medium{background:#fef3c7;color:var(--amber)}.tier-badge.high{background:#fee2e2;color:var(--red)}
-    @media (max-width:1100px){.layout{grid-template-columns:1fr}.summary-grid{grid-template-columns:repeat(2,1fr)}.hero .title-wrap{padding-left:0;padding-top:0}.hero img{left:22px;top:16px}.page{max-width:100%;padding:0 var(--page-pad)}.global-logo-row{margin:10px auto 8px}.global-logo img{height:22px;max-width:140px}}
-    @media (max-width:640px){.summary-grid{grid-template-columns:1fr}.field{grid-template-columns:1fr}.toolbar{flex-direction:column}.btn{width:100%}.global-logo img{height:20px;max-width:120px}}
+    .footer-center{text-align:center;margin:30px 0 10px;font-size:13px;color:#6b7280}
+    @media (max-width:1100px){.layout{grid-template-columns:1fr}.summary-grid{grid-template-columns:repeat(2,1fr)}}
+    @media (max-width:640px){.summary-grid{grid-template-columns:1fr}.field{grid-template-columns:1fr}.toolbar{flex-direction:column}.btn{width:100%}}
     @media print{.toolbar,.global-logo-row{display:none}.page{max-width:none;margin:0;padding:0}.panel,.summary-card,.hero{box-shadow:none}}
   </style>
 </head>
@@ -72,10 +64,8 @@
   </div>
   <div class="page">
     <section class="hero">
-      <div class="title-wrap">
-        <h1>Cloudflare Effort Estimator Tool</h1>
-        <p>Estimates effort for Cloudflare service implementations and migrations. Scoring engine based on complexity parameters with weighted lookup.</p>
-      </div>
+      <h1>Cloudflare Effort Estimator</h1>
+      <p>Workbook-aligned estimator based on lookup scoring, complexity percentage, customer-size base hours, buffer, and phase-wise role allocation.</p>
     </section>
 
     <div class="toolbar">
@@ -86,25 +76,54 @@
     </div>
 
     <div class="layout">
-      <!-- ─── LEFT: INPUTS ─── -->
-      <section class="panel" style="max-height:90vh;overflow-y:auto">
+      <section class="panel">
         <h2 class="panel-title">Project Inputs</h2>
-        <div class="panel-body" id="dynamicInputs"></div>
+        <div class="panel-body">
+          <div class="field buffer" style="margin-bottom:16px;">
+            <label for="bufferPct">Buffer %</label>
+            <input id="bufferPct" type="number" min="0" step="0.01" value="0.2" />
+          </div>
+          <div id="dynamicInputs"></div>
+          <div class="note">This version follows the attached Cloudflare workbook: lookup-based scoring, max score of 79.9, hours multiplier `1 + (complexity% / 100 * 0.8)`, and network engineer offload only for Medium and Large customers.</div>
+        </div>
       </section>
 
-      <!-- ─── RIGHT: RESULTS ─── -->
       <section class="stack">
-        <!-- Summary Cards -->
         <div class="summary-grid">
-          <div class="summary-card"><span class="label">Complexity %</span><span class="value" id="cardComplexity">0%</span></div>
-          <div class="summary-card"><span class="label">Complexity Tier</span><span class="value" id="cardTier">—</span></div>
-          <div class="summary-card"><span class="label">Total Hours (buffered)</span><span class="value" id="cardTotalHours">0</span></div>
-          <div class="summary-card"><span class="label">Working Days</span><span class="value" id="cardDays">0</span></div>
+          <div class="summary-card"><span class="label">Customer Size</span><span class="value" id="projectSize">-</span></div>
+          <div class="summary-card"><span class="label">Complexity %</span><span class="value" id="complexityPct">0</span></div>
+          <div class="summary-card"><span class="label">Total Hours</span><span class="value" id="totalEngineering">0</span></div>
+          <div class="summary-card"><span class="label">Architect Hours</span><span class="value" id="architectTotal">0</span></div>
+          <div class="summary-card"><span class="label">Cloud SME Hours</span><span class="value" id="smeTotal">0</span></div>
         </div>
 
-        <!-- Scoring Table -->
+        <div class="callout" id="complexityCallout">
+          <strong>Complexity Tier:</strong> Low<br />
+          Recommended timeline: 10-20 working days
+        </div>
+
         <section class="panel">
-          <h2 class="panel-title">Complexity Scoring Engine</h2>
+          <h2 class="panel-title">Effort Summary</h2>
+          <div class="panel-body">
+            <table>
+              <thead>
+                <tr>
+                  <th>Phase</th>
+                  <th class="num">% of Total</th>
+                  <th class="num">Hours</th>
+                  <th class="num">Architect %</th>
+                  <th class="num">Architect Hrs</th>
+                  <th class="num">Cloud SME Hrs</th>
+                  <th class="num">Network Eng. Hrs</th>
+                </tr>
+              </thead>
+              <tbody id="phaseSummaryBody"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="panel">
+          <h2 class="panel-title">Scoring Breakdown</h2>
           <div class="panel-body">
             <table>
               <thead>
@@ -117,86 +136,8 @@
                 </tr>
               </thead>
               <tbody id="scoringBody"></tbody>
-              <tfoot>
-                <tr style="font-weight:800;background:#f9fafb">
-                  <td colspan="4">TOTAL SCORE</td>
-                  <td class="num" id="totalScoreCell">0</td>
-                </tr>
-                <tr style="background:#f9fafb">
-                  <td colspan="4">Max Possible Score</td>
-                  <td class="num">79.9</td>
-                </tr>
-                <tr style="font-weight:800;background:#fff7ed">
-                  <td colspan="4">Complexity %</td>
-                  <td class="num" id="complexityPctCell">0%</td>
-                </tr>
-              </tfoot>
             </table>
-          </div>
-        </section>
-
-        <!-- Effort Calculation Table -->
-        <section class="panel">
-          <h2 class="panel-title">Effort Calculation</h2>
-          <div class="panel-body">
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px">
-              <!-- Step 1: Conversion Inputs -->
-              <div>
-                <div class="section-label">Step 1: Conversion Inputs</div>
-                <table>
-                  <tr><td>Complexity Score %</td><td class="num" id="ecComplexity">0</td></tr>
-                  <tr><td>Customer Size</td><td class="num" id="ecSize">Small</td></tr>
-                  <tr>
-                    <td>Buffer %</td>
-                    <td class="num"><input type="number" id="bufferPct" value="20" min="0" max="100" step="1" style="width:70px;text-align:right" /> %</td>
-                  </tr>
-                </table>
-              </div>
-              <!-- Step 2: Base Hours -->
-              <div>
-                <div class="section-label">Step 2: Base Hours by Size</div>
-                <table>
-                  <tr><td>Small</td><td class="num">240</td></tr>
-                  <tr><td>Medium</td><td class="num">480</td></tr>
-                  <tr><td>Large</td><td class="num">900</td></tr>
-                </table>
-              </div>
-            </div>
-
-            <!-- Step 3: Calculated Hours -->
-            <div class="section-label">Step 3: Calculated Hours</div>
-            <table style="margin-bottom:18px">
-              <tr><td>Base Hours (selected)</td><td class="num" id="ecBaseHours">0</td></tr>
-              <tr><td>Complexity Multiplier <span style="color:var(--muted);font-size:11px">= 1 + (Score% / 100 × 0.8)</span></td><td class="num" id="ecMultiplier">1</td></tr>
-              <tr><td>Adjusted Hours</td><td class="num" id="ecAdjusted">0</td></tr>
-              <tr style="font-weight:800;background:#fff7ed"><td>Total Hours (with buffer)</td><td class="num" id="ecTotal">0</td></tr>
-            </table>
-
-            <!-- Step 4: Phase Breakdown -->
-            <div class="section-label">Step 4: Phase Breakdown</div>
-            <table>
-              <thead>
-                <tr>
-                  <th>Phase</th>
-                  <th class="num">% of Total</th>
-                  <th class="num">Hours</th>
-                  <th class="num">Architect %</th>
-                  <th class="num">Architect Hrs</th>
-                  <th class="num">SME Hrs</th>
-                </tr>
-              </thead>
-              <tbody id="phaseBody"></tbody>
-              <tfoot>
-                <tr style="font-weight:800;background:#f9fafb">
-                  <td>TOTAL</td>
-                  <td class="num" id="phaseTotalPct">100%</td>
-                  <td class="num" id="phaseTotalHrs">0</td>
-                  <td class="num"></td>
-                  <td class="num" id="phaseArchTotal">0</td>
-                  <td class="num" id="phaseSmeTotal">0</td>
-                </tr>
-              </tfoot>
-            </table>
+            <div class="note">Max theoretical score in the workbook is 79.9.</div>
           </div>
         </section>
       </section>
@@ -206,11 +147,98 @@
   </div>
 
   <script>
-    /* ══════════════════════════════════════════════
-       LOOKUP TABLE  (from Excel Lookup sheet)
-       Each entry: [Parameter, Option, BaseScore, Weight]
-       ══════════════════════════════════════════════ */
-    const LOOKUP = [
+    const STORAGE_KEY = "cloudflare_effort_estimator_v1";
+    const MAX_SCORE = 79.9;
+    const BASE_HOURS = { Small: 240, Medium: 480, Large: 900 };
+    const DEFAULT_BUFFER = 0.2;
+    const PHASES = [
+      { key: "planning", label: "Planning", pct: 0.15, architectPct: 0.4, nePct: 0.2 },
+      { key: "design", label: "Design", pct: 0.25, architectPct: 0.5, nePct: 0.15 },
+      { key: "implementation", label: "Implementation", pct: 0.35, architectPct: 0.2, nePct: 0.4 },
+      { key: "testing", label: "Testing", pct: 0.15, architectPct: 0.2, nePct: 0.35 },
+      { key: "cutover", label: "Cutover", pct: 0.05, architectPct: 0.3, nePct: 0.3 },
+      { key: "documentation", label: "Documentation", pct: 0.05, architectPct: 0.4, nePct: 0.1 }
+    ];
+    const SAMPLE_INPUTS = {
+      projectType: "Migration",
+      primaryUseCase: "Hybrid",
+      customerSize: "Medium",
+      goLiveUrgency: "Accelerated",
+      customerReadiness: "Medium",
+      magicTransit: "Yes",
+      magicWan: "Yes",
+      magicFirewall: "Yes",
+      zeroTrust: "Yes",
+      waf: "Yes",
+      dns: "Yes",
+      cdnCaching: "Yes",
+      botManagement: "No",
+      securityPolicyComplexity: "Medium (Custom rules)",
+      apiSecurity: "Yes",
+      emailSecurity: "No",
+      cloudflareTunnel: "Yes",
+      numberOfSites: "50-100",
+      dataCenters: "3+",
+      publicCloud: "Yes",
+      haRequirement: "Advanced (Active-Active)",
+      deploymentScope: "Global",
+      trafficProfile: "High",
+      changeWindow: "Business",
+      approvalStrictness: "High",
+      integrationDependency: "Multiple",
+      migrationComplexity: "High",
+      policyMigrationRequired: "Yes",
+      ztUsers: "100-500",
+      appAccessRequired: "Yes",
+      wafInFront: "Yes",
+      domainsCount: "6-20",
+      dnsComplexity: "Medium"
+    };
+
+    const fields = [
+      { key:"projectType", label:"Project Type *", parameter:"Project Type", section:"Project Basics (Mandatory Fields *)", options:["Greenfield","Migration"] },
+      { key:"primaryUseCase", label:"Primary Use Case", parameter:"Primary Use Case", section:"Project Basics (Mandatory Fields *)", options:["Network Security","WAN","Zero Trust","Hybrid"] },
+      { key:"customerSize", label:"Customer Size*", parameter:"Customer Size", section:"Project Basics (Mandatory Fields *)", options:["Small","Medium","Large"], default:"Small" },
+      { key:"goLiveUrgency", label:"Go-Live Urgency", parameter:"Go-Live Urgency", section:"Project Basics (Mandatory Fields *)", options:["Normal","Accelerated"] },
+      { key:"customerReadiness", label:"Customer Readiness", parameter:"Customer Readiness", section:"Project Basics (Mandatory Fields *)", options:["Low","Medium","High"] },
+
+      { key:"magicTransit", label:"Magic Transit", parameter:"Magic Transit", section:"Services In Scope (At Least One Service Must Be Selected)", options:["Yes","No"] },
+      { key:"magicWan", label:"Magic WAN", parameter:"Magic WAN", section:"Services In Scope (At Least One Service Must Be Selected)", options:["Yes","No"] },
+      { key:"magicFirewall", label:"Magic Firewall", parameter:"Magic Firewall", section:"Services In Scope (At Least One Service Must Be Selected)", options:["Yes","No"] },
+      { key:"zeroTrust", label:"Zero Trust", parameter:"Zero Trust", section:"Services In Scope (At Least One Service Must Be Selected)", options:["Yes","No"] },
+      { key:"waf", label:"WAF", parameter:"WAF", section:"Services In Scope (At Least One Service Must Be Selected)", options:["Yes","No"] },
+      { key:"dns", label:"DNS", parameter:"DNS", section:"Services In Scope (At Least One Service Must Be Selected)", options:["Yes","No"] },
+      { key:"cdnCaching", label:"CDN / Caching", parameter:"CDN / Caching", section:"Services In Scope (At Least One Service Must Be Selected)", options:["Yes","No"] },
+      { key:"botManagement", label:"Bot Management", parameter:"Bot Management", section:"Services In Scope (At Least One Service Must Be Selected)", options:["Yes","No"] },
+      { key:"securityPolicyComplexity", label:"Security Policy Complexity", parameter:"Security Policy Complexity", section:"Services In Scope (At Least One Service Must Be Selected)", options:["Low (Minimal rules)","Medium (Custom rules)","High (Complex policies)"] },
+      { key:"apiSecurity", label:"API Security", parameter:"API Security", section:"Services In Scope (At Least One Service Must Be Selected)", options:["Yes","No"] },
+      { key:"emailSecurity", label:"Email Security", parameter:"Email Security", section:"Services In Scope (At Least One Service Must Be Selected)", options:["Yes","No"] },
+      { key:"cloudflareTunnel", label:"Cloudflare Tunnel", parameter:"Cloudflare Tunnel", section:"Services In Scope (At Least One Service Must Be Selected)", options:["Yes","No"] },
+
+      { key:"numberOfSites", label:"Number of Sites", parameter:"Number of Sites", section:"Environment Size", options:["0","1-50","50-100","100+"] },
+      { key:"dataCenters", label:"Data Centers", parameter:"Data Centers", section:"Environment Size", options:["0","1-2","3+"] },
+      { key:"publicCloud", label:"Public Cloud", parameter:"Public Cloud", section:"Environment Size", options:["Yes","No"] },
+      { key:"haRequirement", label:"HA Requirement", parameter:"HA Requirement", section:"Environment Size", options:["None","Basic (Active-Passive)","Advanced (Active-Active)"] },
+      { key:"deploymentScope", label:"Deployment Scope", parameter:"Deployment Scope", section:"Environment Size", options:["Single","Multiple","Global"] },
+      { key:"trafficProfile", label:"Traffic Profile", parameter:"Traffic Profile", section:"Environment Size", options:["Low","Medium","High","Unknown"] },
+
+      { key:"changeWindow", label:"Change Window", parameter:"Change Window", section:"Governance", options:["Business","Maintenance"] },
+      { key:"approvalStrictness", label:"Approval Strictness", parameter:"Approval Strictness", section:"Governance", options:["Low","Medium","High"] },
+      { key:"integrationDependency", label:"Integration Dependency", parameter:"Integration Dependency", section:"Governance", options:["None","Few (1-2 integrations)","Multiple"] },
+
+      { key:"migrationComplexity", label:"Migration Complexity", parameter:"Migration Complexity", section:"Migration Details (If Applicable)", options:["Low","Medium","High"] },
+      { key:"policyMigrationRequired", label:"Policy Migration Required", parameter:"Policy Migration Required", section:"Migration Details (If Applicable)", options:["Yes","No"] },
+
+      { key:"ztUsers", label:"ZT Users", parameter:"ZT Users", section:"Zero Trust Details (If Applicable)", options:["None","<100","100-500","500+"] },
+      { key:"appAccessRequired", label:"App Access Required", parameter:"App Access Required", section:"Zero Trust Details (If Applicable)", options:["Yes","No"] },
+
+      { key:"wafInFront", label:"WAF in Front", parameter:"WAF in Front", section:"WAF Details (If Applicable)", options:["Yes","No"] },
+
+      { key:"domainsCount", label:"Domains Count", parameter:"Domains Count", section:"DNS Details (If Applicable)", options:["1-5","6-20","20+"] },
+      { key:"dnsComplexity", label:"DNS Complexity", parameter:"DNS Complexity", section:"DNS Details (If Applicable)", options:["Low","Medium","High"] }
+    ];
+
+    const lookupRows = [
       ["Project Type","Greenfield",0,1],["Project Type","Migration",2,1.5],
       ["Primary Use Case","Network Security",1,1],["Primary Use Case","WAN",1,1],["Primary Use Case","Zero Trust",1,1],["Primary Use Case","Hybrid",2,1],
       ["Customer Size","Small",1,1],["Customer Size","Medium",2,1],["Customer Size","Large",3,1],
@@ -245,273 +273,241 @@
       ["Domains Count","1-5",0,1.2],["Domains Count","6-20",1,1.2],["Domains Count","20+",2,1.2],
       ["DNS Complexity","Low",0,1.2],["DNS Complexity","Medium",1,1.2],["DNS Complexity","High",2,1.2]
     ];
-    const MAX_SCORE = 79.9;
 
-    /* ══════════════════════════════════════════════
-       INPUT FIELDS SCHEMA  (from Excel Input sheet)
-       ══════════════════════════════════════════════ */
-    const INPUT_FIELDS = [
-      {section:"PROJECT BASICS (Mandatory Fields *)", fields:[
-        {key:"Project Type",label:"Project Type *",options:["Greenfield","Migration"],hint:"Greenfield or Migration"},
-        {key:"Primary Use Case",label:"Primary Use Case",options:["Network Security","WAN","Zero Trust","Hybrid"],hint:"Network Security, WAN, Zero Trust, Hybrid"},
-        {key:"Customer Size",label:"Customer Size *",options:["Small","Medium","Large"],hint:"Small (<10 apps), Medium (10-50), Large (>50 apps)"},
-        {key:"Go-Live Urgency",label:"Go-Live Urgency",options:["Normal","Accelerated"],hint:"Normal or Accelerated"},
-        {key:"Customer Readiness",label:"Customer Readiness",options:["Low","Medium","High"],hint:"Low if requirements unclear"}
-      ]},
-      {section:"SERVICES IN SCOPE (At least one)", fields:[
-        {key:"Magic Transit",label:"Magic Transit",options:["No","Yes"],hint:"DDoS / BGP onboarding"},
-        {key:"Magic WAN",label:"Magic WAN",options:["No","Yes"],hint:"WAN transformation / site connectivity"},
-        {key:"Magic Firewall",label:"Magic Firewall",options:["No","Yes"],hint:"L3/L4 firewall policies"},
-        {key:"Zero Trust",label:"Zero Trust",options:["No","Yes"],hint:"User/app access control (ZTNA)"},
-        {key:"WAF",label:"WAF",options:["No","Yes"],hint:"Web application protection"},
-        {key:"DNS",label:"DNS",options:["No","Yes"],hint:"DNS hosting/migration"},
-        {key:"CDN / Caching",label:"CDN / Caching",options:["No","Yes"],hint:"Performance/caching"},
-        {key:"Bot Management",label:"Bot Management",options:["No","Yes"],hint:"Bot mitigation"},
-        {key:"Security Policy Complexity",label:"Security Policy Complexity",options:["Low (Minimal rules)","Medium (Custom rules)","High (Complex policies)"],hint:"Low, Medium, High"},
-        {key:"API Security",label:"API Security",options:["No","Yes"],hint:"API protection"},
-        {key:"Email Security",label:"Email Security",options:["No","Yes"],hint:"Email protection"},
-        {key:"Cloudflare Tunnel",label:"Cloudflare Tunnel",options:["No","Yes"],hint:"Private app exposure without public IP"}
-      ]},
-      {section:"ENVIRONMENT SIZE", fields:[
-        {key:"Number of Sites",label:"Number of Sites",options:["0","1-50","50-100","100+"],hint:"0, 1-50, 50-100, 100+"},
-        {key:"Data Centers",label:"Data Centers",options:["0","1-2","3+"],hint:"0, 1-2, 3+"},
-        {key:"Public Cloud",label:"Public Cloud",options:["No","Yes"],hint:"AWS/Azure/GCP used"},
-        {key:"HA Requirement",label:"HA Requirement",options:["None","Basic (Active-Passive)","Advanced (Active-Active)"],hint:"None, Basic, Advanced"},
-        {key:"Deployment Scope",label:"Deployment Scope",options:["Single","Multiple","Global"],hint:"Single, Multi, Global"},
-        {key:"Traffic Profile",label:"Traffic Profile",options:["Low","Medium","High","Unknown"],hint:"Low, Medium, High"}
-      ]},
-      {section:"GOVERNANCE", fields:[
-        {key:"Change Window",label:"Change Window",options:["Business","Maintenance"],hint:"Business or Maintenance"},
-        {key:"Approval Strictness",label:"Approval Strictness",options:["Low","Medium","High"],hint:"Low, Medium, High"},
-        {key:"Integration Dependency",label:"Integration Dependency",options:["None","Few (1-2 integrations)","Multiple"],hint:"None, Few, Multiple"}
-      ]},
-      {section:"MIGRATION DETAILS (if applicable)", fields:[
-        {key:"Migration Complexity",label:"Migration Complexity",options:["Low","Medium","High"],hint:"Low, Medium, High"},
-        {key:"Policy Migration Required",label:"Policy Migration Required",options:["No","Yes"],hint:"Yes or No"}
-      ]},
-      {section:"ZERO TRUST DETAILS (if applicable)", fields:[
-        {key:"ZT Users",label:"ZT Users",options:["None","<100","100-500","500+"],hint:"None, <100, 100-500, 500+"},
-        {key:"App Access Required",label:"App Access Required",options:["No","Yes"],hint:"Yes or No"}
-      ]},
-      {section:"WAF DETAILS (if applicable)", fields:[
-        {key:"WAF in Front",label:"WAF in Front",options:["No","Yes"],hint:"Yes or No"}
-      ]},
-      {section:"DNS DETAILS (if applicable)", fields:[
-        {key:"Domains Count",label:"Domains Count",options:["1-5","6-20","20+"],hint:"1-5, 6-20, 20+"},
-        {key:"DNS Complexity",label:"DNS Complexity",options:["Low","Medium","High"],hint:"Low, Medium, High"}
-      ]}
-    ];
+    const lookupMap = Object.fromEntries(lookupRows.map(([parameter, option, score, weight]) => [`${parameter}||${option}`, { score, weight }]));
 
-    /* ── Phase breakdown config (from Excel Effort Calculation) ── */
-    const PHASES = [
-      {name:"Planning",     pct:0.15, archPct:0.40},
-      {name:"Design",       pct:0.25, archPct:0.50},
-      {name:"Implementation",pct:0.35, archPct:0.20},
-      {name:"Testing",      pct:0.15, archPct:0.20},
-      {name:"Cutover",      pct:0.05, archPct:0.30},
-      {name:"Documentation",pct:0.05, archPct:0.40}
-    ];
-    const BASE_HOURS = {Small:240, Medium:480, Large:900};
-
-    /* ── Sample values ── */
-    const SAMPLE = {"Project Type":"Migration","Primary Use Case":"Hybrid","Customer Size":"Medium","Go-Live Urgency":"Accelerated","Customer Readiness":"Low","Magic Transit":"Yes","Magic WAN":"Yes","Magic Firewall":"Yes","Zero Trust":"Yes","WAF":"Yes","DNS":"Yes","CDN / Caching":"Yes","Bot Management":"Yes","Security Policy Complexity":"High (Complex policies)","API Security":"Yes","Email Security":"Yes","Cloudflare Tunnel":"Yes","Number of Sites":"50-100","Data Centers":"3+","Public Cloud":"Yes","HA Requirement":"Advanced (Active-Active)","Deployment Scope":"Global","Traffic Profile":"High","Change Window":"Business","Approval Strictness":"High","Integration Dependency":"Multiple","Migration Complexity":"High","Policy Migration Required":"Yes","ZT Users":"500+","App Access Required":"Yes","WAF in Front":"Yes","Domains Count":"20+","DNS Complexity":"High"};
-
-    /* ══════════════════════════════════════════════
-       HELPER FUNCTIONS
-       ══════════════════════════════════════════════ */
-    function fmt(v,d=1){ const n=Number(v||0); return d===0?Math.round(n).toLocaleString():n.toFixed(d).replace(/\.0+$/,''); }
-    function getVal(key){ const el=document.getElementById("inp_"+CSS.escape(key)); return el?el.value:""; }
-    function lookupScore(param,option){
-      const row=LOOKUP.find(r=>r[0]===param && r[1]===option);
-      return row?{score:row[2],weight:row[3]}:{score:0,weight:1};
+    function fmt(v){
+      const n = Number(v || 0);
+      return n.toFixed(2).replace(/\.00$/,'').replace(/(\.\d*[1-9])0$/,'$1');
     }
-    function escHtml(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML;}
-
-    /* ══════════════════════════════════════════════
-       RENDER INPUTS
-       ══════════════════════════════════════════════ */
+    function percent(v){ return `${fmt(Number(v || 0) * 100)}%`; }
+    function getFieldValue(field){
+      const el = document.getElementById(field.key);
+      return el ? el.value : "";
+    }
+    function groupedFields(){
+      const groups = {};
+      fields.forEach(field => {
+        if (!groups[field.section]) groups[field.section] = [];
+        groups[field.section].push(field);
+      });
+      return groups;
+    }
     function renderInputs(){
-      const host=document.getElementById("dynamicInputs");
-      host.innerHTML=INPUT_FIELDS.map(sec=>`
-        <div style="margin-bottom:16px">
-          <div class="section-label">${escHtml(sec.section)}</div>
+      const host = document.getElementById("dynamicInputs");
+      host.innerHTML = Object.entries(groupedFields()).map(([section, sectionFields]) => `
+        <div style="margin-bottom:18px;">
+          <div class="section-label">${section}</div>
           <div class="input-grid">
-            ${sec.fields.map(f=>`
+            ${sectionFields.map(field => `
               <div class="field">
-                <label for="inp_${CSS.escape(f.key)}">${escHtml(f.label)}${f.hint?`<span class="hint">${escHtml(f.hint)}</span>`:''}</label>
-                <select id="inp_${CSS.escape(f.key)}">
-                  <option value="">— Select —</option>
-                  ${f.options.map(o=>`<option value="${escHtml(o)}">${escHtml(o)}</option>`).join('')}
+                <label for="${field.key}">${field.label}</label>
+                <select id="${field.key}">
+                  <option value=""></option>
+                  ${field.options.map(option => `<option value="${option}">${option}</option>`).join("")}
                 </select>
               </div>
-            `).join('')}
+            `).join("")}
           </div>
         </div>
-      `).join('');
-      // attach listeners
-      INPUT_FIELDS.forEach(sec=>sec.fields.forEach(f=>{
-        const el=document.getElementById("inp_"+CSS.escape(f.key));
-        if(el) el.addEventListener("change",render);
-      }));
-      document.getElementById("bufferPct").addEventListener("input",render);
-    }
+      `).join("");
 
-    /* ══════════════════════════════════════════════
-       SCORING  (replicates Excel Scoring sheet)
-       ══════════════════════════════════════════════ */
-    function computeScoring(){
-      const rows=[];
-      let totalWeighted=0;
-      INPUT_FIELDS.forEach(sec=>sec.fields.forEach(f=>{
-        const val=getVal(f.key);
-        const lu=lookupScore(f.key,val);
-        const weighted=lu.score*lu.weight;
-        totalWeighted+=weighted;
-        rows.push({param:f.key,value:val,score:lu.score,weight:lu.weight,weighted});
-      }));
-      const complexityPct=(totalWeighted/MAX_SCORE)*100;
-      return {rows,totalWeighted,complexityPct};
-    }
-
-    /* ══════════════════════════════════════════════
-       EFFORT CALCULATION (replicates Excel sheet)
-       ══════════════════════════════════════════════ */
-    function computeEffort(complexityPct){
-      const size=getVal("Customer Size")||"Small";
-      const bufferPct=Number(document.getElementById("bufferPct").value||20)/100;
-      const baseHours=BASE_HOURS[size]||240;
-      const multiplier=1+(complexityPct/100*0.8);
-      const adjusted=baseHours*multiplier;
-      const total=adjusted*(1+bufferPct);
-      const phases=PHASES.map(p=>{
-        const hrs=total*p.pct;
-        const archHrs=hrs*p.archPct;
-        const smeHrs=hrs-archHrs;
-        return {name:p.name,pct:p.pct,hrs,archPct:p.archPct,archHrs,smeHrs};
+      fields.forEach(field => {
+        const el = document.getElementById(field.key);
+        if (!el) return;
+        el.value = field.default || "";
+        el.addEventListener("input", render);
+        el.addEventListener("change", render);
       });
-      const archTotal=phases.reduce((s,p)=>s+p.archHrs,0);
-      const smeTotal=phases.reduce((s,p)=>s+p.smeHrs,0);
-      let tier="Low";
-      if(complexityPct>65) tier="High";
-      else if(complexityPct>35) tier="Medium";
-      return {size,bufferPct,baseHours,multiplier,adjusted,total,phases,archTotal,smeTotal,tier,complexityPct};
+      document.getElementById("bufferPct").addEventListener("input", render);
+      document.getElementById("bufferPct").addEventListener("change", render);
     }
+    function getInputsObject(){
+      const inputs = {};
+      fields.forEach(field => { inputs[field.key] = getFieldValue(field); });
+      inputs.bufferPct = Number(document.getElementById("bufferPct").value || 0);
+      return inputs;
+    }
+    function hasAnyProjectInput(inputs){
+      return fields.some(field => String(inputs[field.key] || "").trim() !== "");
+    }
+    function getComplexityTier(complexityPct){
+      if (complexityPct <= 35) return { tier: "Low", timeline: "10-20 working days" };
+      if (complexityPct <= 65) return { tier: "Medium", timeline: "20-45 working days" };
+      return { tier: "High", timeline: "45-187+ working days" };
+    }
+    function calculate(inputs){
+      if (!hasAnyProjectInput(inputs)) {
+        return {
+          customerSize: "-",
+          totalScore: 0,
+          complexityPct: 0,
+          bufferPct: Number(inputs.bufferPct || 0),
+          complexityMultiplier: 1,
+          baseHours: 0,
+          adjustedHours: 0,
+          totalHours: 0,
+          architectTotal: 0,
+          smeTotal: 0,
+          networkAdminTotal: 0,
+          scoringRows: [],
+          phaseRows: [],
+          complexityTier: getComplexityTier(0)
+        };
+      }
 
-    /* ══════════════════════════════════════════════
-       RENDER
-       ══════════════════════════════════════════════ */
+      const scoringRows = fields.map(field => {
+        const inputValue = String(inputs[field.key] || "").trim();
+        const lookup = lookupMap[`${field.parameter}||${inputValue}`] || { score: 0, weight: 0 };
+        return {
+          parameter: field.parameter,
+          inputValue: inputValue || "0",
+          baseScore: lookup.score,
+          weight: lookup.weight,
+          weightedScore: lookup.score * lookup.weight
+        };
+      });
+
+      const totalScore = scoringRows.reduce((sum, row) => sum + row.weightedScore, 0);
+      const complexityPct = (totalScore / MAX_SCORE) * 100;
+      const customerSize = inputs.customerSize || "Small";
+      const baseHours = BASE_HOURS[customerSize] || 0;
+      const complexityMultiplier = 1 + ((complexityPct / 100) * 0.8);
+      const adjustedHours = baseHours * complexityMultiplier;
+      const bufferPct = Number(inputs.bufferPct || 0);
+      const totalHours = adjustedHours * (1 + bufferPct);
+      const hasNetworkEngineer = customerSize === "Medium" || customerSize === "Large";
+
+      const phaseRows = PHASES.map(phase => {
+        const hours = totalHours * phase.pct;
+        const architectHours = hours * phase.architectPct;
+        const smeBeforeOffload = hours - architectHours;
+        const networkHours = hasNetworkEngineer ? smeBeforeOffload * phase.nePct : 0;
+        const smeHours = hasNetworkEngineer ? smeBeforeOffload - networkHours : smeBeforeOffload;
+        return {
+          ...phase,
+          hours,
+          architectHours,
+          smeHours,
+          networkHours
+        };
+      });
+
+      return {
+        customerSize,
+        totalScore,
+        complexityPct,
+        bufferPct,
+        complexityMultiplier,
+        baseHours,
+        adjustedHours,
+        totalHours,
+        architectTotal: phaseRows.reduce((sum, row) => sum + row.architectHours, 0),
+        smeTotal: phaseRows.reduce((sum, row) => sum + row.smeHours, 0),
+        networkAdminTotal: phaseRows.reduce((sum, row) => sum + row.networkHours, 0),
+        scoringRows,
+        phaseRows,
+        complexityTier: getComplexityTier(complexityPct)
+      };
+    }
     function render(){
-      const scoring=computeScoring();
-      const effort=computeEffort(scoring.complexityPct);
+      const inputs = getInputsObject();
+      const result = calculate(inputs);
+      document.getElementById("projectSize").textContent = result.customerSize;
+      document.getElementById("complexityPct").textContent = `${fmt(result.complexityPct)}%`;
+      document.getElementById("totalEngineering").textContent = fmt(result.totalHours);
+      document.getElementById("architectTotal").textContent = fmt(result.architectTotal);
+      document.getElementById("smeTotal").textContent = fmt(result.smeTotal);
 
-      // Summary cards
-      document.getElementById("cardComplexity").textContent=fmt(scoring.complexityPct,1)+"%";
-      document.getElementById("cardComplexity").className="value tier-"+effort.tier.toLowerCase();
-      const tierEl=document.getElementById("cardTier");
-      tierEl.innerHTML=`<span class="tier-badge ${effort.tier.toLowerCase()}">${effort.tier}</span>`;
-      document.getElementById("cardTotalHours").textContent=fmt(effort.total,0);
-      document.getElementById("cardDays").textContent=fmt(effort.total/8,0);
+      document.getElementById("complexityCallout").innerHTML =
+        `<strong>Complexity Tier:</strong> ${result.complexityTier.tier}<br />Recommended timeline: ${result.complexityTier.timeline}<br />Total score: ${fmt(result.totalScore)} / ${fmt(MAX_SCORE)} | Base hours: ${fmt(result.baseHours)} | Multiplier: ${fmt(result.complexityMultiplier)} | Buffer: ${percent(result.bufferPct)}`;
 
-      // Scoring table
-      document.getElementById("scoringBody").innerHTML=scoring.rows.map(r=>`
-        <tr>
-          <td>${escHtml(r.param)}</td>
-          <td>${escHtml(r.value||'—')}</td>
-          <td class="num">${r.score}</td>
-          <td class="num">${r.weight}</td>
-          <td class="num" style="font-weight:700">${fmt(r.weighted,2)}</td>
-        </tr>`).join('');
-      document.getElementById("totalScoreCell").textContent=fmt(scoring.totalWeighted,2);
-      document.getElementById("complexityPctCell").textContent=fmt(scoring.complexityPct,1)+"%";
+      document.getElementById("phaseSummaryBody").innerHTML =
+        result.phaseRows.map(row => `
+          <tr>
+            <td>${row.label}</td>
+            <td class="num">${percent(row.pct)}</td>
+            <td class="num">${fmt(row.hours)}</td>
+            <td class="num">${percent(row.architectPct)}</td>
+            <td class="num">${fmt(row.architectHours)}</td>
+            <td class="num">${fmt(row.smeHours)}</td>
+            <td class="num">${fmt(row.networkHours)}</td>
+          </tr>
+        `).join("") +
+        `<tr><td><strong>Total</strong></td><td class="num"><strong>100%</strong></td><td class="num"><strong>${fmt(result.totalHours)}</strong></td><td></td><td class="num"><strong>${fmt(result.architectTotal)}</strong></td><td class="num"><strong>${fmt(result.smeTotal)}</strong></td><td class="num"><strong>${fmt(result.networkAdminTotal)}</strong></td></tr>`;
 
-      // Effort calculation
-      document.getElementById("ecComplexity").textContent=fmt(scoring.complexityPct,1)+"%";
-      document.getElementById("ecSize").textContent=effort.size||"Small";
-      document.getElementById("ecBaseHours").textContent=fmt(effort.baseHours,0);
-      document.getElementById("ecMultiplier").textContent=fmt(effort.multiplier,3);
-      document.getElementById("ecAdjusted").textContent=fmt(effort.adjusted,1);
-      document.getElementById("ecTotal").textContent=fmt(effort.total,1);
-
-      // Phase breakdown
-      document.getElementById("phaseBody").innerHTML=effort.phases.map(p=>`
-        <tr>
-          <td>${escHtml(p.name)}</td>
-          <td class="num">${Math.round(p.pct*100)}%</td>
-          <td class="num">${fmt(p.hrs,1)}</td>
-          <td class="num">${Math.round(p.archPct*100)}%</td>
-          <td class="num">${fmt(p.archHrs,1)}</td>
-          <td class="num">${fmt(p.smeHrs,1)}</td>
-        </tr>`).join('');
-      document.getElementById("phaseTotalPct").textContent="100%";
-      document.getElementById("phaseTotalHrs").textContent=fmt(effort.total,1);
-      document.getElementById("phaseArchTotal").textContent=fmt(effort.archTotal,1);
-      document.getElementById("phaseSmeTotal").textContent=fmt(effort.smeTotal,1);
+      document.getElementById("scoringBody").innerHTML =
+        result.scoringRows.map(row => `
+          <tr>
+            <td>${row.parameter}</td>
+            <td>${row.inputValue}</td>
+            <td class="num">${fmt(row.baseScore)}</td>
+            <td class="num">${fmt(row.weight)}</td>
+            <td class="num">${fmt(row.weightedScore)}</td>
+          </tr>
+        `).join("") +
+        `<tr><td><strong>Total Score</strong></td><td></td><td></td><td></td><td class="num"><strong>${fmt(result.totalScore)}</strong></td></tr>` +
+        `<tr><td><strong>Complexity %</strong></td><td></td><td></td><td></td><td class="num"><strong>${fmt(result.complexityPct)}%</strong></td></tr>`;
     }
-
-    /* ══════════════════════════════════════════════
-       ACTIONS
-       ══════════════════════════════════════════════ */
     function resetInputs(){
-      INPUT_FIELDS.forEach(sec=>sec.fields.forEach(f=>{
-        const el=document.getElementById("inp_"+CSS.escape(f.key));
-        if(el) el.value="";
-      }));
-      document.getElementById("bufferPct").value=20;
-      render();
-    }
-
-    function loadSample(){
-      Object.entries(SAMPLE).forEach(([k,v])=>{
-        const el=document.getElementById("inp_"+CSS.escape(k));
-        if(el) el.value=v;
+      fields.forEach(field => {
+        const el = document.getElementById(field.key);
+        if (el) el.value = field.default || "";
       });
+      document.getElementById("bufferPct").value = DEFAULT_BUFFER;
       render();
     }
-
+    function loadSample(){
+      Object.entries(SAMPLE_INPUTS).forEach(([key, value]) => {
+        const el = document.getElementById(key);
+        if (el) el.value = value;
+      });
+      document.getElementById("bufferPct").value = DEFAULT_BUFFER;
+      render();
+    }
     function exportExcel(){
-      const scoring=computeScoring();
-      const effort=computeEffort(scoring.complexityPct);
-      let rows=[];
-      rows.push(["CLOUDFLARE EFFORT ESTIMATOR RESULTS"]);
+      const inputs = getInputsObject();
+      const result = calculate(inputs);
+      const rows = [];
+      rows.push(["Field", "Value"]);
+      rows.push(["Buffer %", inputs.bufferPct]);
+      fields.forEach(field => rows.push([field.label, inputs[field.key] || ""]));
       rows.push([]);
-      rows.push(["=== INPUTS ==="]);
-      rows.push(["Parameter","Value"]);
-      INPUT_FIELDS.forEach(sec=>sec.fields.forEach(f=>rows.push([f.key,getVal(f.key)])));
+      rows.push(["Metric", "Value"]);
+      rows.push(["Customer Size", result.customerSize]);
+      rows.push(["Total Score", result.totalScore]);
+      rows.push(["Complexity %", result.complexityPct]);
+      rows.push(["Base Hours", result.baseHours]);
+      rows.push(["Complexity Multiplier", result.complexityMultiplier]);
+      rows.push(["Adjusted Hours", result.adjustedHours]);
+      rows.push(["Total Hours", result.totalHours]);
+      rows.push(["Architect Hours", result.architectTotal]);
+      rows.push(["Cloud SME Hours", result.smeTotal]);
+      rows.push(["Network Eng. Hours", result.networkAdminTotal]);
       rows.push([]);
-      rows.push(["=== SCORING ==="]);
+      rows.push(["Phase","% of Total","Hours","Architect %","Architect Hrs","Cloud SME Hrs","Network Eng. Hrs"]);
+      result.phaseRows.forEach(row => rows.push([row.label, row.pct, row.hours, row.architectPct, row.architectHours, row.smeHours, row.networkHours]));
+      rows.push([]);
       rows.push(["Parameter","Input Value","Base Score","Weight","Weighted Score"]);
-      scoring.rows.forEach(r=>rows.push([r.param,r.value,r.score,r.weight,r.weighted]));
-      rows.push(["TOTAL SCORE","","","",scoring.totalWeighted]);
-      rows.push(["Complexity %","","","",fmt(scoring.complexityPct,1)+"%"]);
-      rows.push([]);
-      rows.push(["=== EFFORT CALCULATION ==="]);
-      rows.push(["Complexity Tier",effort.tier]);
-      rows.push(["Base Hours",effort.baseHours]);
-      rows.push(["Multiplier",fmt(effort.multiplier,3)]);
-      rows.push(["Adjusted Hours",fmt(effort.adjusted,1)]);
-      rows.push(["Total Hours (buffered)",fmt(effort.total,1)]);
-      rows.push([]);
-      rows.push(["Phase","% of Total","Hours","Architect %","Architect Hrs","SME Hrs"]);
-      effort.phases.forEach(p=>rows.push([p.name,Math.round(p.pct*100)+"%",fmt(p.hrs,1),Math.round(p.archPct*100)+"%",fmt(p.archHrs,1),fmt(p.smeHrs,1)]));
-      rows.push(["TOTAL","100%",fmt(effort.total,1),"",fmt(effort.archTotal,1),fmt(effort.smeTotal,1)]);
+      result.scoringRows.forEach(row => rows.push([row.parameter, row.inputValue, row.baseScore, row.weight, row.weightedScore]));
 
-      const html=`<table border="1">${rows.map(r=>`<tr>${(r.length?r:[""]).map(c=>`<td>${c??""}</td>`).join("")}</tr>`).join("")}</table>`;
-      const blob=new Blob([html],{type:'application/vnd.ms-excel'});
-      const url=URL.createObjectURL(blob);
-      const a=document.createElement('a');
-      a.href=url; a.download='cloudflare_effort_estimate.xls'; a.click();
+      const htmlTable = `<table border="1">${rows.map(row => `<tr>${(row.length ? row : [""]).map(cell => `<td>${cell ?? ""}</td>`).join("")}</tr>`).join("")}</table>`;
+      const blob = new Blob([htmlTable], { type: "application/vnd.ms-excel" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "cloudflare_effort_estimator.xls";
+      a.click();
       URL.revokeObjectURL(url);
     }
 
-    /* ── Event listeners ── */
-    document.getElementById("loadSample").addEventListener("click",loadSample);
-    document.getElementById("resetInputs").addEventListener("click",resetInputs);
-    document.getElementById("exportExcel").addEventListener("click",exportExcel);
-    document.getElementById("printPdf").addEventListener("click",()=>window.print());
+    document.getElementById("loadSample").addEventListener("click", loadSample);
+    document.getElementById("resetInputs").addEventListener("click", resetInputs);
+    document.getElementById("exportExcel").addEventListener("click", exportExcel);
+    document.getElementById("printPdf").addEventListener("click", () => window.print());
 
-    /* ── Init ── */
     renderInputs();
-    render();
+    resetInputs();
   </script>
 </body>
 </html>
